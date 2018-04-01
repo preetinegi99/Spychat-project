@@ -1,19 +1,46 @@
 from spydetails import spy #importing variables from spydetails.py
+from steganography.steganography import Steganography #importing Steganography library
+from datetime import datetime #impoeting datetime library
 def select_frnd():#function to select a friend
+    print"Select your friend"
     serial_no=1
     for frnd in friends:#print list of friends
         print str(serial_no)+". "+ frnd['name']
         serial_no=serial_no+1
-    user_selected_frnd=input("Enter your choice: ")
+    user_selected_frnd=input("Enter your choice: ")#user selecting friend
     user_selected_frnd_index=user_selected_frnd-1
     return user_selected_frnd_index #to return the selected friend index
 def send_message():# functon for sending message
-    print "function to send a message"
+    selected_friend = select_frnd()#calling the select_friend function
+    original_image=raw_input("What is the name of original image : ")#take name of original image as input
+    secret_text=raw_input("Enter your secret message : ")#entering the secret message
+    output_path="output.jpg" #name of image after encoding the message
+    Steganography.encode(original_image,output_path,secret_text)#calling encode() function to encode message in image
+    print "Message Encoded"
+    #dictonary to store details of a message
+    new_chat={"message":secret_text,
+              "time":datetime.now(),
+              "send by me": True}
+    friends[selected_friend]['chats'],append(new_chat)#appending ghats in the friends list
+    print "Your secret message is ready"
+
 def read_message():#function for reading message
-    print "function to read a message"
+    selected_friend=select_frnd() #calling select_friend function
+    output_path=raw_input("Which image you want to decode? ")#the name of image to be decoded
+    secret_text=Steganography.decode(output_path)#calling decode()function to decode
+    print "The decoded message is "+secret_text #printing the secret text
+    #dictionary to store details of message
+    new_chat = {"message": secret_text,
+                "time": datetime.now(),
+                "send by me": False}
+    friends[selected_friend]['chats'].append(new_chat)
 def add_friend():#function to add friend
     #taking friends detail s input
-    frnd={'name':"",'age':0,'ratings':0.0,'isonline':True}#dictionary for details of friend
+    frnd={'name':"",
+          'age':0,
+          'ratings':0.0,
+          'isonline':True,
+          'chats':[]}#dictionary for details of friend
     frnd['name']=raw_input("What is your friend's name : ")
     frnd['age']=input("What is the age :")
     frnd['rating']=input("What are the ratings : ")
@@ -24,10 +51,9 @@ def add_friend():#function to add friend
         print "The friend cannot be added "
     return len(friends)#returning length of list friend_name
 
-
 def add_status(c_status):#function to add status
     if c_status!=None:#checking if the status is none
-        print "Your current status is : "+c_status
+        print "Your current status is : "+c_status #printing the current status
     else:
         print "You don't have any status currently"
     existing_status =raw_input("You want to add from old status Y/N? ")#taking new status from user
@@ -53,7 +79,7 @@ def spy_chat(spy_name,spy_age,spy_rating): #function spy_chat to display menu
     choice= -1 #choice variable set to -1
     print 'Here are your options ' + spy_name
     while choice!=0: #while loop will run until user choose to exit
-        print '     MENU     \n 1.Add a status \n 2.Add a friend \n 3.Send a message \n 4.Read  a message\n 0.Exit' #printing menu
+        print '     MENU     \n 1.Add a status \n 2.Add a friend \n 3.Send a message \n 4.Read  a message\n 5.Read chats from a user \n 0.Exit' #printing menu
         choice=input("Enter your choice:") #taking choice input
         if choice==1:#choice 1
             current_status=add_status(current_status)
@@ -66,18 +92,22 @@ def spy_chat(spy_name,spy_age,spy_rating): #function spy_chat to display menu
                 print str(friend_no)+". "+i['name']
                 friend_no=friend_no+1
         elif choice==3:
-            print "send a message"
+            send_message() #calling send_message()function
         elif choice==4:
-            print "read a message"
+            read_message()#calling the read_message()function
+        elif choice==5: #to read a user,s message
+            print "will read a user's message"
         elif choice==0: #exit
             print 'Exit'
         else:  #for any invalid input
                 print 'Invalid input'
 
-print 'Hello...!!' #printing hello
+f=datetime.now() #calling function now() from datetime library
+print f.strftime("%b %d %Y %H:%M:%S")#use of stringtimeformat
+print 'Hello...!! Welcome to SPYCHAT.' #printing hello
 print 'Let\'s get started'
 old_status=["I spy","Watching Titanic","My phone is spying on me","Spy plots are hard,really hard"] #list of old status
-friends=[{'name':'Preeti','age':20,'rating':3.4,'isonline':True},{'name':'Himanshu','age':27,'ratings':4.4,'isonline':True}]#list to store friend details
+friends=[{'name':'Preeti','age':20,'rating':3.4,'isonline':True,'chats':[]},{'name':'Himanshu','age':27,'ratings':4.4,'isonline':True,'chats':[]}]#list to store friend details
 spy_reply=raw_input('Are you a new user? Y/N ') #asking the user if he is a new user or not
 if spy_reply.upper()=='N':
     print 'Welcome back!! '+spy['name']+" age is "+str(spy['age'])+' and your rating is '+ str(spy['rating'])
